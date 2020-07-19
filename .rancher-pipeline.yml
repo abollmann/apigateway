@@ -19,5 +19,8 @@ stages:
       path: ./deploy/deployment-stag.yaml
   - applyYamlConfig:
       path: ./deploy/deployment-prod.yaml
+    when:
+      branch: master
+      event: push
 timeout: 60
 notification: {}
