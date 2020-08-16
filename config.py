@@ -10,7 +10,7 @@ CLIENT_ID = 'api-gateway'
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 
-
 KAFKA_HOST = os.environ.get('KAFKA_HOST', '127.0.0.1')
 KAFKA_PORT = os.environ.get('KAFKA_PORT', '9093')
 KAFKA_PREFIX = os.environ.get('KAFKA_PREFIX', 'local')
+KAFKA_TOPICS = ['buildings', 'devices', 'tenants']

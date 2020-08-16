@@ -2,8 +2,6 @@ import pytest
 
 from apigateway import app
 
-BASE_PATH = '/api/apartments'
-
 
 @pytest.fixture
 def client():

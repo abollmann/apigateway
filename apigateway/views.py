@@ -1,4 +1,7 @@
+from flask import request
+
 from apigateway import app, oidc, logger
+from apigateway.consumer import await_response
 from apigateway.producer import produce_command
 
 BUILDINGS_BASE_PATH = '/api/buildings'
@@ -9,23 +12,25 @@ TENANTS_BASE_PATH = '/api/tenants'
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
 @oidc.require_token(roles=['read'])
 def get_all():
-    produce_command('apartments', 'GET_ALL')
-    return 'helo', 200
+    message_id = produce_command('buildings', 'GET_ALL')
+    return await_response('buildings', message_id)
 
 
 @app.route(F'{BUILDINGS_BASE_PATH}/<object_id>', methods=['GET'])
 @oidc.require_token(roles=['read'])
 def get_one(object_id):
-    return 'herllo', 200
+    message_id = produce_command('buildings', 'GET_BY_ID', {'_id': object_id})
+    return await_response('buildings', message_id)
 
 
 @app.route(BUILDINGS_BASE_PATH, methods=['POST'])
 @oidc.require_token(roles=['read', 'write'])
 def create_one():
-    return 'herllo', 200
+    message_id = produce_command('buildings', 'CREATE', request.data.decode('utf-8'))
+    return await_response('buildings', message_id)
 
 
 @app.errorhandler(Exception)
 def handle_http_errors(error):
     logger.error(error)
-    return str(error), 400
+    return 500

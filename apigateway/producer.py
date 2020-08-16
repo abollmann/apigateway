@@ -1,6 +1,7 @@
+import json
 import uuid
 
-from kafka import KafkaProducer
+from kafka import KafkaProducer, KafkaConsumer
 from config import KAFKA_HOST, KAFKA_PORT, KAFKA_PREFIX
 
 producer = KafkaProducer(
@@ -14,8 +15,10 @@ def produce_log(msg):
 
 
 def produce_command(api_name, command_type, data=None):
-    value = {'data': {} if data is None else data,
+    message_id = str(uuid.uuid4())
+    value = {'data': '' if data is None else data,
              'command_type': command_type,
-             'id': str(uuid.uuid4())}
-    value = bytes(str(value), encoding='utf-8')
+             'id': message_id}
+    value = bytes(str(json.dumps(value)), encoding='utf-8')
     producer.send(F'{KAFKA_PREFIX}-{api_name}-commands', value=value)
+    return message_id
