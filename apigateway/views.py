@@ -16,10 +16,10 @@ def get_all():
     return await_response('buildings', message_id)
 
 
-@app.route(F'{BUILDINGS_BASE_PATH}/<object_id>', methods=['GET'])
+@app.route(F'{BUILDINGS_BASE_PATH}/<internal_id>', methods=['GET'])
 @oidc.require_token(roles=['read'])
-def get_one(object_id):
-    message_id = produce_command('buildings', 'GET_BY_ID', {'_id': object_id})
+def get_one(internal_id):
+    message_id = produce_command('buildings', 'GET_BY_ID', {'internal_id': internal_id})
     return await_response('buildings', message_id)
 
 

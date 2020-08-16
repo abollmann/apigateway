@@ -20,7 +20,6 @@ consumers = init_consumers()
 def await_response(consumer, message_id):
     for message in consumers[consumer]:
         message = json.loads(message.value.decode('utf-8'))
-        print(message)
         if message['id'] == message_id:
             return json.dumps(message['data']), message['status_code']
     return 500
