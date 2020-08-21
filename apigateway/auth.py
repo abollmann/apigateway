@@ -25,6 +25,8 @@ class AuthEndpoint:
                     if 'Bearer ' not in auth_header:
                         return 'Bearer token required', 401
                     status_code, user = self.get_user(auth_header.replace('Bearer ', ''))
+                    if str(status_code).startswith('5'):
+                        return 'Authentication Service timed out!', 500
                     if user == {'active': False} or str(status_code).startswith('4') or 'error' in user.keys():
                         return 'Unauthorized', 401
                     self.user = user

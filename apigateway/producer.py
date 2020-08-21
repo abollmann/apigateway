@@ -16,7 +16,7 @@ def produce_log(msg):
 
 def produce_command(api_name, command_type, data=None):
     message_id = str(uuid.uuid4())
-    value = {'data': '' if data is None else data,
+    value = {'data': '{}' if not data else data,
              'command_type': command_type,
              'id': message_id}
     value = bytes(str(json.dumps(value)), encoding='utf-8')
