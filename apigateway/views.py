@@ -40,7 +40,9 @@ def get_all_buildings():
 @oidc.require_token(roles=['read'])
 def get_all_devices():
     message_id = produce_command('devices', 'GET_ALL')
-    return await_response('devices', message_id)
+    xd = await_response('devices', message_id)
+    print(xd)
+    return xd
 
 
 @app.route(F'{DEVICES_BASE_PATH}/?tenant_id=<tenant_id>', methods=['GET'])
@@ -53,7 +55,9 @@ def alter_device_distribution(tenant_id):
 @oidc.require_token(roles=['read'])
 def get_all_tenants():
     message_id = produce_command('tenants', 'GET_ALL')
-    return await_response('tenants', message_id)
+    xd = await_response('tenants', message_id)
+    print(xd)
+    return xd
 
 
 @app.route(TENANTS_BASE_PATH, methods=['POST'])
