@@ -10,7 +10,7 @@ from apigateway.auth import AuthEndpoint
 app = Flask(__name__)
 app.config.from_pyfile('../config.py')
 oidc = AuthEndpoint(app)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app)
 
 # LOGGING CONFIG
 logger = logging.create_logger(app)

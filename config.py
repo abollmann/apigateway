@@ -4,6 +4,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '7j@+pza(6(=*)$7zsb)bu*$f$fu1kcs*-oz78
 DEBUG = os.environ.get('DEBUG', False)
 APP_HOST = os.environ.get('APP_HOST', '0.0.0.0')
 TRAP_BAD_REQUEST_ERRORS = True
+CORS_HEADERS = 'Content-Type'
 
 TOKEN_INTROSPECTION_URL = 'https://116.203.242.235.xip.io/auth/realms/apartments/protocol/openid-connect/token/introspect'
 CLIENT_ID = 'api-gateway'

@@ -1,4 +1,5 @@
 from flask import request
+from flask_cors import cross_origin
 
 from apigateway import app, oidc, logger
 from apigateway.consumer import await_response
@@ -30,6 +31,7 @@ TENANTS_BASE_PATH = '/api/tenants'
 
 
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
+@cross_origin()
 @oidc.require_token(roles=['read'])
 def get_all_buildings():
     message_id = produce_command('buildings', 'GET_ALL')
@@ -37,30 +39,30 @@ def get_all_buildings():
 
 
 @app.route(DEVICES_BASE_PATH, methods=['GET'])
+@cross_origin()
 @oidc.require_token(roles=['read'])
 def get_all_devices():
     message_id = produce_command('devices', 'GET_ALL')
-    xd = await_response('devices', message_id)
-    print(xd)
-    return xd
+    return await_response('devices', message_id)
 
 
 @app.route(F'{DEVICES_BASE_PATH}/?tenant_id=<tenant_id>', methods=['GET'])
+@cross_origin()
 @oidc.require_token(roles=['read'])
 def alter_device_distribution(tenant_id):
     pass
 
 
 @app.route(TENANTS_BASE_PATH, methods=['GET'])
+@cross_origin()
 @oidc.require_token(roles=['read'])
 def get_all_tenants():
     message_id = produce_command('tenants', 'GET_ALL')
-    xd = await_response('tenants', message_id)
-    print(xd)
-    return xd
+    return await_response('tenants', message_id)
 
 
 @app.route(TENANTS_BASE_PATH, methods=['POST'])
+@cross_origin()
 @oidc.require_token(roles=['read', 'write'])
 def create_one_tenant():
     message_id = produce_command('tenants', 'CREATE', request.data.decode('utf-8'))
@@ -68,6 +70,7 @@ def create_one_tenant():
 
 
 @app.route(F'{TENANTS_BASE_PATH}/<email>', methods=['DELETE'])
+@cross_origin()
 @oidc.require_token(roles=['read', 'write'])
 def delete_tenant(email):
     message_id = produce_command('tenants', 'DELETE', {'email': email})
