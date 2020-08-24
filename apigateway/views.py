@@ -1,9 +1,12 @@
-from flask import request
+import requests
+from flask import request, Response
 from flask_cors import cross_origin
 
 from apigateway import app, oidc, logger
-from apigateway.consumer import await_response
-from apigateway.producer import produce_command
+from apigateway.consumer import await_response, get_data
+from apigateway.producer import produce_command, broadcast_command
+
+from config import BUILDINGS_BASE_URL, TENANTS_BASE_URL, DEVICES_BASE_URL
 
 BUILDINGS_BASE_PATH = '/api/buildings'
 DEVICES_BASE_PATH = '/api/devices'
@@ -32,33 +35,34 @@ TENANTS_BASE_PATH = '/api/tenants'
 
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
 @cross_origin()
-@oidc.require_token(roles=['read'])
+@oidc.require_token(roles=['admin'])
 def get_all_buildings():
-    message_id = produce_command('buildings', 'GET_ALL')
-    return await_response('buildings', message_id)
+    response = requests.get(BUILDINGS_BASE_URL)
+    return response.content.decode('utf-8'), response.status_code
 
 
 @app.route(DEVICES_BASE_PATH, methods=['GET'])
 @cross_origin()
-@oidc.require_token(roles=['read'])
+@oidc.require_token(roles=['admin'])
 def get_all_devices():
-    message_id = produce_command('devices', 'GET_ALL')
-    return await_response('devices', message_id)
-
-
-@app.route(F'{DEVICES_BASE_PATH}/?tenant_id=<tenant_id>', methods=['GET'])
-@cross_origin()
-@oidc.require_token(roles=['read'])
-def alter_device_distribution(tenant_id):
-    pass
+    response = requests.get(DEVICES_BASE_URL)
+    return response.content.decode('utf-8'), response.status_code
 
 
 @app.route(TENANTS_BASE_PATH, methods=['GET'])
 @cross_origin()
-@oidc.require_token(roles=['read'])
+@oidc.require_token(roles=['admin'])
 def get_all_tenants():
-    message_id = produce_command('tenants', 'GET_ALL')
-    return await_response('tenants', message_id)
+    response = requests.get(TENANTS_BASE_URL)
+    return response.content.decode('utf-8'), response.status_code
+
+
+@app.route(F'{DEVICES_BASE_PATH}/distribute', methods=['POST'])
+@cross_origin()
+@oidc.require_token(roles=['admin'])
+def alter_device_distribution():
+    broadcast_command(['devices', 'tenants'], 'DISTRIBUTE_DEVICES', request.data.decode('utf-8'))
+    return Response(status=201)
 
 
 @app.route(TENANTS_BASE_PATH, methods=['POST'])
@@ -80,4 +84,4 @@ def delete_tenant(email):
 @app.errorhandler(Exception)
 def handle_http_errors(error):
     logger.error(error)
-    return 500
+    return Response(status=500)
