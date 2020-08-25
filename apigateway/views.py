@@ -1,3 +1,5 @@
+import json
+
 import requests
 from flask import request, Response
 from flask_cors import cross_origin
@@ -69,11 +71,13 @@ def get_all_tenants():
     for key, response in data.items():
         if response.status_code != 200:
             return response.status_code
-        data[key] = response.content.decode('utf-8')
+        data[key] = json.loads(response.content.decode('utf-8'))
     tenants = data[TENANTS_BASE_URL]
     devices = data[DEVICES_BASE_URL]
     for tenant in tenants:
-        tenant['devices'] = find_by_ids(devices, tenant['devices'])
+        tenant_devices = find_by_ids(devices, tenant['devices'])
+        tenant['devices'] = tenant_devices
+        tenant['bill'] = sum([d['current_price'] for d in tenant_devices])
     return tenants, 200
 
 
