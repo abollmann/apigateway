@@ -32,12 +32,11 @@ TENANTS_BASE_PATH = '/api/tenants'
 #     message_id = produce_command('tenants', 'DEVICES', request.data.decode('utf-8'))
 #     return await_response('tenants', message_id)
 
-
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def get_all_buildings():
-    response = requests.get(BUILDINGS_BASE_URL)
+    response = requests.get(BUILDINGS_BASE_URL, verify=False)
     return response.content.decode('utf-8'), response.status_code
 
 
@@ -45,7 +44,7 @@ def get_all_buildings():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def get_all_devices():
-    response = requests.get(DEVICES_BASE_URL)
+    response = requests.get(DEVICES_BASE_URL, verify=False)
     return response.content.decode('utf-8'), response.status_code
 
 
@@ -53,7 +52,7 @@ def get_all_devices():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def get_all_tenants():
-    response = requests.get(TENANTS_BASE_URL)
+    response = requests.get(TENANTS_BASE_URL, verify=False)
     return response.content.decode('utf-8'), response.status_code
 
 

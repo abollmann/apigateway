@@ -16,6 +16,7 @@ KAFKA_PORT = os.environ.get('KAFKA_PORT', '9093')
 KAFKA_PREFIX = os.environ.get('KAFKA_PREFIX', 'local')
 KAFKA_TOPICS = ['buildings', 'devices', 'tenants']
 
-BUILDINGS_BASE_URL = os.environ.get('BUILDINGS_BASE_URL', F'https://{KAFKA_PREFIX}.116.203.242.235.xip.io/api/buildings')
+BUILDINGS_BASE_URL = os.environ.get('BUILDINGS_BASE_URL',
+                                    F'https://{KAFKA_PREFIX}.116.203.242.235.xip.io/api/buildings')
 DEVICES_BASE_URL = os.environ.get('DEVICES_BASE_URL', F'https://{KAFKA_PREFIX}.116.203.242.235.xip.io/api/devices')
 TENANTS_BASE_URL = os.environ.get('TENANTS_BASE_URL', F'https://{KAFKA_PREFIX}.116.203.242.235.xip.io/api/tenants')
