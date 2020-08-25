@@ -5,12 +5,15 @@ from flask_cors import cross_origin
 from apigateway import app, oidc, logger
 from apigateway.consumer import await_response, get_data
 from apigateway.producer import produce_command, broadcast_command
+from apigateway.shared.util import find_by_ids
 
 from config import BUILDINGS_BASE_URL, TENANTS_BASE_URL, DEVICES_BASE_URL
 
 BUILDINGS_BASE_PATH = '/api/buildings'
 DEVICES_BASE_PATH = '/api/devices'
 TENANTS_BASE_PATH = '/api/tenants'
+
+BASE_URLS = [BUILDINGS_BASE_URL, DEVICES_BASE_URL, TENANTS_BASE_URL]
 
 
 # @app.route(F'{BUILDINGS_BASE_PATH}/<internal_id>', methods=['GET'])
@@ -35,6 +38,16 @@ TENANTS_BASE_PATH = '/api/tenants'
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
 @cross_origin()
 @oidc.require_token(roles=['admin'])
+def get_all():
+    data = {url: requests.get(url, verify=False) for url in BASE_URLS}
+    for response in data.values():
+        if response.status_code != 200:
+            return response.status_code
+
+
+@app.route(BUILDINGS_BASE_PATH, methods=['GET'])
+@cross_origin()
+@oidc.require_token(roles=['admin'])
 def get_all_buildings():
     response = requests.get(BUILDINGS_BASE_URL, verify=False)
     return response.content.decode('utf-8'), response.status_code
@@ -52,8 +65,16 @@ def get_all_devices():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def get_all_tenants():
-    response = requests.get(TENANTS_BASE_URL, verify=False)
-    return response.content.decode('utf-8'), response.status_code
+    data = {url: requests.get(url, verify=False) for url in BASE_URLS}
+    for key, response in data.items():
+        if response.status_code != 200:
+            return response.status_code
+        data[key] = response.content.decode('utf-8')
+    tenants = data[TENANTS_BASE_URL]
+    devices = data[DEVICES_BASE_URL]
+    for tenant in tenants:
+        tenant['devices'] = find_by_ids(devices, tenant['devices'])
+    return tenants, 200
 
 
 @app.route(F'{DEVICES_BASE_PATH}/distribute', methods=['POST'])
@@ -68,8 +89,8 @@ def alter_device_distribution():
 @cross_origin()
 @oidc.require_token(roles=['read', 'write'])
 def create_one_tenant():
-    message_id = produce_command('tenants', 'CREATE', request.data.decode('utf-8'))
-    return await_response('tenants', message_id)
+    response = requests.post(TENANTS_BASE_URL, request.data.decode('utf-8'), verify=False)
+    return response.content.decode('utf-8'), response.status_code
 
 
 @app.route(F'{TENANTS_BASE_PATH}/<email>', methods=['DELETE'])
