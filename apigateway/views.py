@@ -78,7 +78,7 @@ def get_all_tenants():
         tenant_devices = find_by_ids(devices, tenant['devices'])
         tenant['devices'] = tenant_devices
         tenant['bill'] = sum([d['current_price'] for d in tenant_devices])
-    return tenants, 200
+    return json.dumps(tenants), 200
 
 
 @app.route(F'{DEVICES_BASE_PATH}/distribute', methods=['POST'])
