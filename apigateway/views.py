@@ -37,15 +37,6 @@ BASE_URLS = [BUILDINGS_BASE_URL, DEVICES_BASE_URL, TENANTS_BASE_URL]
 #     message_id = produce_command('tenants', 'DEVICES', request.data.decode('utf-8'))
 #     return await_response('tenants', message_id)
 
-@app.route(BUILDINGS_BASE_PATH, methods=['GET'])
-@cross_origin()
-@oidc.require_token(roles=['admin'])
-def get_all():
-    data = {url: requests.get(url, verify=False) for url in BASE_URLS}
-    for response in data.values():
-        if response.status_code != 200:
-            return response.status_code
-
 
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
 @cross_origin()
@@ -65,7 +56,7 @@ def get_all_devices():
 
 @app.route(TENANTS_BASE_PATH, methods=['GET'])
 @cross_origin()
-# @oidc.require_token(roles=['admin'])
+@oidc.require_token(roles=['admin'])
 def get_all_tenants():
     data = {url: requests.get(url, verify=False) for url in BASE_URLS}
     for key, response in data.items():
