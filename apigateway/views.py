@@ -65,7 +65,7 @@ def get_all_devices():
 
 @app.route(TENANTS_BASE_PATH, methods=['GET'])
 @cross_origin()
-@oidc.require_token(roles=['admin'])
+# @oidc.require_token(roles=['admin'])
 def get_all_tenants():
     data = {url: requests.get(url, verify=False) for url in BASE_URLS}
     for key, response in data.items():
