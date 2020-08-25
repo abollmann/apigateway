@@ -21,7 +21,6 @@ def produce_command(api_name, command_type, data=None):
              'id': message_id}
     value = bytes(str(json.dumps(value)), encoding='utf-8')
     producer.send(F'{KAFKA_PREFIX}-{api_name}-commands', value=value)
-    return message_id
 
 
 def broadcast_command(api_names, command_type, data=None):

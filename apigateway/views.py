@@ -72,7 +72,7 @@ def get_all_tenants():
     return json.dumps(tenants), 200
 
 
-@app.route(F'{DEVICES_BASE_PATH}/distribute', methods=['POST'])
+@app.route(TENANTS_BASE_PATH, methods=['PUT'])
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def alter_device_distribution():
@@ -82,18 +82,10 @@ def alter_device_distribution():
 
 @app.route(TENANTS_BASE_PATH, methods=['POST'])
 @cross_origin()
-@oidc.require_token(roles=['read', 'write'])
+@oidc.require_token(roles=['admin'])
 def create_one_tenant():
     response = requests.post(TENANTS_BASE_URL, request.data.decode('utf-8'), verify=False)
     return response.content.decode('utf-8'), response.status_code
-
-
-@app.route(F'{TENANTS_BASE_PATH}/<email>', methods=['DELETE'])
-@cross_origin()
-@oidc.require_token(roles=['read', 'write'])
-def delete_tenant(email):
-    message_id = produce_command('tenants', 'DELETE', {'email': email})
-    return await_response('tenants', message_id)
 
 
 @app.errorhandler(Exception)
