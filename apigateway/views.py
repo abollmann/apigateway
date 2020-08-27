@@ -76,7 +76,11 @@ def get_all_tenants():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def alter_device_distribution():
-    broadcast_command(['devices', 'tenants'], 'DISTRIBUTE_DEVICES', request.data.decode('utf-8'))
+    request_data = request.data.decode('utf-8')
+    if json.loads(request_data)['device_ids']:
+        broadcast_command(['devices', 'tenants'], 'DISTRIBUTE_DEVICES', request_data)
+    else:
+        broadcast_command(['devices', 'tenants'], 'REMOVE_DEVICES', request_data)
     return Response(status=201)
 
 
@@ -84,7 +88,11 @@ def alter_device_distribution():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def create_one_tenant():
-    response = requests.post(TENANTS_BASE_URL, request.data.decode('utf-8'), verify=False)
+    request_data = request.data.decode('utf-8')
+    response = requests.post(TENANTS_BASE_URL, request_data, verify=False)
+    if response.status_code == 201:
+        new_tenant = response.content.decode('utf-8')
+        produce_command('buildings', 'ADD_TENANT', new_tenant)
     return response.content.decode('utf-8'), response.status_code
 
 
