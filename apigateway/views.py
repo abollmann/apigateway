@@ -5,9 +5,8 @@ from flask import request, Response
 from flask_cors import cross_origin
 
 from apigateway import app, oidc, logger
-from apigateway.consumer import await_response, get_data
 from apigateway.producer import produce_command, broadcast_command
-from apigateway.shared.util import find_by_ids
+from apigateway.shared.util import find_by_ids, find_by_id
 
 from config import BUILDINGS_BASE_URL, TENANTS_BASE_URL, DEVICES_BASE_URL
 
@@ -16,26 +15,6 @@ DEVICES_BASE_PATH = '/api/devices'
 TENANTS_BASE_PATH = '/api/tenants'
 
 BASE_URLS = [BUILDINGS_BASE_URL, DEVICES_BASE_URL, TENANTS_BASE_URL]
-
-
-# @app.route(F'{BUILDINGS_BASE_PATH}/<internal_id>', methods=['GET'])
-# @oidc.require_token(roles=['read'])
-# def get_one_building(internal_id):
-#     message_id = produce_command('buildings', 'GET_BY_ID', {'internal_id': internal_id})
-#     return await_response('buildings', message_id)
-
-
-# @app.route(BUILDINGS_BASE_PATH, methods=['POST'])
-# @oidc.require_token(roles=['read', 'write'])
-# def create_one_building():
-#     message_id = produce_command('buildings', 'CREATE', request.data.decode('utf-8'))
-#     return await_response('buildings', message_id)
-
-# @app.route(F'{TENANTS_BASE_PATH}/<email>', methods=['PUT'])
-# @oidc.require_token(roles=['read', 'write'])
-# def add_devices_to_tenant():
-#     message_id = produce_command('tenants', 'DEVICES', request.data.decode('utf-8'))
-#     return await_response('tenants', message_id)
 
 
 @app.route(BUILDINGS_BASE_PATH, methods=['GET'])
@@ -65,10 +44,12 @@ def get_all_tenants():
         data[key] = json.loads(response.content.decode('utf-8'))
     tenants = data[TENANTS_BASE_URL]
     devices = data[DEVICES_BASE_URL]
+    buildings = data[BUILDINGS_BASE_URL]
     for tenant in tenants:
         tenant_devices = find_by_ids(devices, tenant['devices'])
         tenant['devices'] = tenant_devices
         tenant['bill'] = sum([d['current_price'] for d in tenant_devices])
+        tenant['home'] = find_by_id(buildings, tenant['home_building'])
     return json.dumps(tenants), 200
 
 

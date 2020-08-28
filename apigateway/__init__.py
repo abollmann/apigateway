@@ -17,5 +17,4 @@ logger = logging.create_logger(app)
 logger.removeHandler(default_handler)
 logger.addHandler(LoggingHandler())
 
-import apigateway.consumer
 import apigateway.views

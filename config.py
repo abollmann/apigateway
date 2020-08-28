@@ -9,11 +9,10 @@ CORS_HEADERS = 'Content-Type'
 TOKEN_INTROSPECTION_URL = 'https://116.203.242.235.xip.io/auth/realms/apartments/protocol/openid-connect/token/introspect'
 CLIENT_ID = 'api-gateway'
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
 
 KAFKA_HOST = os.environ.get('KAFKA_HOST', '127.0.0.1')
 KAFKA_PORT = os.environ.get('KAFKA_PORT', '9093')
-KAFKA_PREFIX = os.environ.get('KAFKA_PREFIX', 'local')
+KAFKA_PREFIX = os.environ.get('KAFKA_PREFIX', 'dev')
 KAFKA_TOPICS = ['buildings', 'devices', 'tenants']
 
 BUILDINGS_BASE_URL = os.environ.get('BUILDINGS_BASE_URL',
