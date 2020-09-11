@@ -48,7 +48,7 @@ def get_all_tenants():
     for tenant in tenants:
         tenant_devices = find_by_ids(devices, tenant['devices'])
         tenant['devices'] = tenant_devices
-        tenant['bill'] = sum([d['current_price'] for d in tenant_devices])
+        tenant['total_meter_value'] = sum([d['meter_value_diff'] for d in tenant_devices])
         tenant['home'] = find_by_id(buildings, tenant['home_building'])
     return json.dumps(tenants), 200
 
@@ -81,7 +81,7 @@ def create_one_tenant():
 @cross_origin()
 @oidc.require_token(roles=['admin'])
 def delete_tenant(tenant_id):
-    response = requests.delete(F'{TENANTS_BASE_URL}/{tenant_id}')
+    response = requests.delete(F'{TENANTS_BASE_URL}/{tenant_id}', verify=False)
     if response.status_code != 204:
         return Response(status=response.status_code)
     produce_command('devices', 'REMOVE_DEVICES', {'tenant_id': tenant_id})
