@@ -77,6 +77,17 @@ def create_one_tenant():
     return response.content.decode('utf-8'), response.status_code
 
 
+@app.route(F'{TENANTS_BASE_PATH}/<tenant_id>', methods=['DELETE'])
+@cross_origin()
+@oidc.require_token(roles=['admin'])
+def delete_tenant(tenant_id):
+    response = requests.delete(F'{TENANTS_BASE_URL}/{tenant_id}')
+    if response.status_code != 204:
+        return Response(status=response.status_code)
+    produce_command('devices', 'REMOVE_DEVICES', {'tenant_id': tenant_id})
+    return Response(status=204)
+
+
 @app.errorhandler(Exception)
 def handle_http_errors(error):
     logger.error(error)
