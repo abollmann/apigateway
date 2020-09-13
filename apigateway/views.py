@@ -88,6 +88,14 @@ def delete_tenant(tenant_id):
     return Response(status=204)
 
 
+@app.route(DEVICES_BASE_PATH, methods=['PUT'])
+@cross_origin()
+@oidc.require_token(roles=['admin'])
+def reset_meter_value():
+    produce_command('devices', 'RESET_METER_VALUE', request.data.decode('utf-8'))
+    return Response(status=204)
+
+
 @app.errorhandler(Exception)
 def handle_http_errors(error):
     logger.error(error)

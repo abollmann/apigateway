@@ -6,7 +6,7 @@ APP_HOST = os.environ.get('APP_HOST', '0.0.0.0')
 TRAP_BAD_REQUEST_ERRORS = True
 CORS_HEADERS = 'Content-Type'
 
-TOKEN_INTROSPECTION_URL = 'https://116.203.242.235.xip.io/auth/realms/apartments/protocol/openid-connect/token/introspect'
+KEYCLOAK_URL = 'https://116.203.242.235.xip.io/auth/'
 CLIENT_ID = 'api-gateway'
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 
